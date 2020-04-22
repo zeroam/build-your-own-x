@@ -164,14 +164,14 @@ def read_index() -> List[IndexEntry]:
     digest = hashlib.sha1(data[:-20]).digest()
     assert digest == data[-20:], "invalid index checksum"
 
-    signature, version, num_entryies = struct.unpack("!4sLL", data[:12])
+    signature, version, num_entries = struct.unpack("!4sLL", data[:12])
     assert signature == b"DIRC", f"invalid index signature {signature}"
     assert version == 2, f"unknown index version {version}"
 
     entry_data = data[12:-20]
     entries = []
     i = 0
-    while i + 62 < len(entry_data):
+    for _ in range(num_entries):
         fields_end = i + 62
         fields = struct.unpack("!LLLLLLLLLL20sH", entry_data[i:fields_end])
 
@@ -184,7 +184,7 @@ def read_index() -> List[IndexEntry]:
         entry_len = ((62 + len(path) + 8) // 8) * 8
         i += entry_len
 
-    assert len(entries) == num_entryies
+    assert len(entries) == num_entries
 
     return entries
 
