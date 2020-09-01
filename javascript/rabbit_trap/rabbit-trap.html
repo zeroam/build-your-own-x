@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="user-scalable=no,width=device-width">
+  <link href="rabbit-trap.css" rel="stylesheet" type="text/css">
+  <title>Rabbit Trap</title>
+</head>
+<body>
+  <div id="menu">
+    <p>menu</p>
+    <div id="menu-list">
+      <br>
+      <a href="rabbit-trap.html?01">part1</a>
+      <a href="rabbit-trap.html?02">part2</a>
+      <a href="rabbit-trap.html?03">part3</a>
+      <a href="rabbit-trap.html?04">part4</a>
+      <a href="rabbit-trap.html?05">part5</a>
+      <a href="rabbit-trap.html?06">part6</a>
+      <a href="rabbit-trap.html?07">part7</a>
+    </div>
+  </div>
+
+  <canvas></canvas>
+
+  <script type="text/javascript">
+    let part = String(window.location).split("?")[1];
+    part = part ? part : "01";
+
+    let parts = {
+      "01": ["01/controller-01.js", "01/display-01.js", "01/engine-01.js", "01/game-01.js", "01/main-01.js"],
+      "02": ["02/controller-02.js", "02/display-02.js", "02/engine-02.js", "02/game-02.js", "02/main-02.js"],
+      "03": ["03/controller-03.js", "03/display-03.js", "03/engine-03.js", "03/game-03.js", "03/main-03.js"],
+      "04": ["04/controller-04.js", "04/display-04.js", "04/engine-04.js", "04/game-04.js", "04/main-04.js"],
+      "05": ["05/controller-05.js", "05/display-05.js", "05/engine-05.js", "05/game-05.js", "05/main-05.js"],
+      "06": ["06/controller-06.js", "06/display-06.js", "06/engine-06.js", "06/game-06.js", "06/main-06.js"],
+      "07": ["07/controller-07.js", "07/display-07.js", "07/engine-07.js", "07/game-07.js", "07/main-07.js"],
+    };
+
+    for (let index = 0; index < parts[part].length; index++) {
+      let script = document.createElement("script");
+      script.setAttribute("type", "text/javascript");
+      script.setAttribute("src", parts[part][index]);
+      document.head.appendChild(script);
+    }
+
+    let menu = document.getElementById("menu");
+    let menu_list = document.getElementById("menu-list");
+
+    menu.addEventListener("click", function(event) {
+      menu_list.style.display = (menu_list.style.display === "none") ? "grid" : "none"
+    });
+
+    menu_list.style.display = "none"
+
+  </script>
+  
+</body>
+</html>
