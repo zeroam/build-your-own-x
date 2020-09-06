@@ -31,7 +31,5 @@ Controller.ButtonInput.prototype = {
             this.active = down;
         }
         this.down = down;
-
-        console.log(`active: ${this.active}, down: ${this.down}`)
     }
 }

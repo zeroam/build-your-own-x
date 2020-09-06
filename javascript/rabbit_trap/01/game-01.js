@@ -19,8 +19,7 @@ const Game = function() {
         }
 
         this.color = `rgb(${this.colors[0]},${this.colors[1]},${this.colors[2]})`
-        console.log(this.color);
-    }
+    };
 }
 
 Game.prototype = {
