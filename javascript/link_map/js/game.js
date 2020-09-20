@@ -67,7 +67,7 @@ Game.Frame.prototype = {
   constructor: Game.Frame,
 };
 
-Game.TileSet = function () {
+Game.CharacterSet = function () {
   let f = Game.Frame;
 
   this.frames = [
@@ -85,6 +85,9 @@ Game.TileSet = function () {
     new f(32, 48, 16, 16),  // character 1 - up
   ];
 };
+Game.CharacterSet.prototype = {
+  constructor: Game.CharacterSet
+}
 
 Game.Player = function (x = 100, y = 20) {
   Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-down"], 10);
@@ -185,11 +188,29 @@ Object.assign(Game.Player.prototype, Game.Animator.prototype);
 Game.World = function () {
   this.background_color = "#F0F8FF";
 
-  this.tile_set = new Game.TileSet();
+  this.Character_set = new Game.CharacterSet();
   this.player = new Game.Player();
 
-  this.height = 200;
-  this.width = 300;
+  this.width = 16 * 18;
+  this.height = 16 * 12;
+  this.columns = 18;
+  this.rows = 12;
+
+  // -1값은 기본 베이스 이미지 사용
+  this.map = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, 12, 12],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, 31, 12],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, 12, 12],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 58, 67, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  ];
 };
 Game.World.prototype = {
   collideObject: function (object) {
