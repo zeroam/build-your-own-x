@@ -67,41 +67,68 @@ Game.Frame.prototype = {
   constructor: Game.Frame,
 };
 
-Game.CharacterSet = function () {
+Game.Object = function (x, y, width, height) {
+  this.x = x;
+  this.x_old = x;
+  this.y = y;
+  this.y_old = y;
+  this.width = width;
+  this.height = height;
+};
+Game.Object.prototype = {
+  constructor: Game.Object,
+
+  collideObject: function (object) {
+    if (
+      this.getRight() < object.getLeft() ||
+      this.getBottom() < object.getTop() ||
+      this.getLeft() > object.getRight() ||
+      this.getTop() > object.getBottom()
+    ) {
+      return false;
+    }
+
+    return true;
+  },
+
+  getBottom: function () {
+    return this.y + this.height;
+  },
+
+  getLeft: function () {
+    return this.x;
+  },
+
+  getRight: function () {
+    return this.x + this.width;
+  },
+
+  getTop: function () {
+    return this.y;
+  },
+};
+
+Game.TileSet = function (rows, columns, tile_size) {
   let f = Game.Frame;
 
-  this.frames = [
-    new f(0, 0, 16, 16),
-    new f(16, 0, 16, 16),
-    new f(32, 0, 16, 16), // character 1 - down
-    new f(0, 16, 16, 16),
-    new f(16, 16, 16, 16),
-    new f(32, 16, 16, 16),  // character 1 - left
-    new f(0, 32, 16, 16),
-    new f(16, 32, 16, 16),
-    new f(32, 32, 16, 16),  // character 1 - right
-    new f(0, 48, 16, 16),
-    new f(16, 48, 16, 16),
-    new f(32, 48, 16, 16),  // character 1 - up
-  ];
+  this.frames = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < columns; col++) {
+      this.frames.push(
+        new f(tile_size * col, tile_size * row, tile_size, tile_size)
+      );
+    }
+  }
 };
-Game.CharacterSet.prototype = {
-  constructor: Game.CharacterSet
-}
 
 Game.Player = function (x = 100, y = 20) {
+  Game.Object.call(this, x, y, 16, 16);
   Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-down"], 10);
-
-  this.width = 16;
-  this.height = 16;
 
   this.velocity_x = 0;
   this.velocity_y = 0;
   this.direction = "d"; // l, r, u, d
   this.speed = 3;
-
-  this.x = x;
-  this.y = y;
 };
 
 Game.Player.prototype = {
@@ -110,12 +137,12 @@ Game.Player.prototype = {
   frame_sets: {
     "idle-down": [0],
     "move-down": [0, 1, 2, 1],
-    "idle-left": [3],
-    "move-left": [3, 4, 5, 4],
-    "idle-right": [6],
-    "move-right": [6, 7, 8, 7],
-    "idle-up": [9],
-    "move-up": [9, 10, 11, 10],
+    "idle-left": [12],
+    "move-left": [12, 13, 14, 13],
+    "idle-right": [24],
+    "move-right": [24, 25, 26, 25],
+    "idle-up": [36],
+    "move-up": [36, 37, 38, 37],
   },
 
   moveLeft: function () {
@@ -146,30 +173,34 @@ Game.Player.prototype = {
     this.velocity_y = 0;
   },
 
-  updateAnimation: function() {
-    if (this.direction === "d") {  // 아래로 이동
+  updateAnimation: function () {
+    if (this.direction === "d") {
+      // 아래로 이동
       if (this.velocity_y === 0) {
-        this.changeFrameSet(this.frame_sets["idle-down"], "pause")
+        this.changeFrameSet(this.frame_sets["idle-down"], "pause");
       } else {
-        this.changeFrameSet(this.frame_sets["move-down"], "loop")
+        this.changeFrameSet(this.frame_sets["move-down"], "loop");
       }
-    } else if (this.direction === "l") {  // 왼쪽으로 이동
+    } else if (this.direction === "l") {
+      // 왼쪽으로 이동
       if (this.velocity_x === 0) {
-        this.changeFrameSet(this.frame_sets["idle-left"], "pause")
+        this.changeFrameSet(this.frame_sets["idle-left"], "pause");
       } else {
-        this.changeFrameSet(this.frame_sets["move-left"], "loop")
+        this.changeFrameSet(this.frame_sets["move-left"], "loop");
       }
-    } else if (this.direction === "r") {  // 오른쪽으로 이동
+    } else if (this.direction === "r") {
+      // 오른쪽으로 이동
       if (this.velocity_x === 0) {
-        this.changeFrameSet(this.frame_sets["idle-right"], "pause")
+        this.changeFrameSet(this.frame_sets["idle-right"], "pause");
       } else {
-        this.changeFrameSet(this.frame_sets["move-right"], "loop")
+        this.changeFrameSet(this.frame_sets["move-right"], "loop");
       }
-    } else if (this.direction === "u") {  // 오른쪽으로 이동
+    } else if (this.direction === "u") {
+      // 오른쪽으로 이동
       if (this.velocity_y === 0) {
-        this.changeFrameSet(this.frame_sets["idle-up"], "pause")
+        this.changeFrameSet(this.frame_sets["idle-up"], "pause");
       } else {
-        this.changeFrameSet(this.frame_sets["move-up"], "loop")
+        this.changeFrameSet(this.frame_sets["move-up"], "loop");
       }
     }
 
@@ -183,18 +214,54 @@ Game.Player.prototype = {
     this.updateAnimation();
   },
 };
+Object.assign(Game.Player.prototype, Game.Object.prototype);
 Object.assign(Game.Player.prototype, Game.Animator.prototype);
+Game.Player.prototype.constructor = Game.Player;
+
+// 충돌 시 링크가 세팅되는 오브젝트
+Game.LinkObject = function (x, y, url) {
+  Game.Object.call(this, x, y, 16, 16);
+  Game.Animator.call(
+    this,
+    Game.LinkObject.prototype.frame_sets["idle-treasure"],
+    10
+  );
+  // step 1. 일단 충돌 시 해당 링크가 콘솔창에 출력 되도록 설정
+
+  // 일단은 x, y 좌표 기반 -> 나중에는 타일으로 변경할 수 있음
+};
+Game.LinkObject.prototype = {
+  frame_sets: {
+    "idle-treasure": [28],
+    "move-treasure": [27, 28],
+  },
+
+  update: function (player) {
+    if (this.collideObject(player)) {
+      this.changeFrameSet(this.frame_sets["move-treasure"], "loop");
+    } else {
+      this.changeFrameSet(this.frame_sets["idle-treasure"], "pause");
+    }
+  },
+};
+Object.assign(Game.LinkObject.prototype, Game.Object.prototype);
+Object.assign(Game.LinkObject.prototype, Game.Animator.prototype);
+Game.LinkObject.prototype.constructor = Game.LinkObject;
 
 Game.World = function () {
   this.background_color = "#F0F8FF";
 
-  this.Character_set = new Game.CharacterSet();
+  this.character_set = new Game.TileSet(8, 12, 16);
+  this.tile_set = new Game.TileSet(11, 8, 16);
   this.player = new Game.Player();
 
-  this.width = 16 * 18;
-  this.height = 16 * 12;
+  // 나중에는 동적으로 추가되는 오브젝트
+  this.link_obj = new Game.LinkObject(100, 200, "url");
+
   this.columns = 18;
   this.rows = 12;
+  this.width = this.columns * 16
+  this.height = this.rows * 16
 
   // -1값은 기본 베이스 이미지 사용
   this.map = [
@@ -235,5 +302,8 @@ Game.World.prototype = {
     // 가속도 개념 필요 없음, 같은 속도로 계속 이동
     this.player.update();
     this.collideObject(this.player);
+
+    // player 위치에 기반에 상태 변경
+    this.link_obj.update(this.player);
   },
 };

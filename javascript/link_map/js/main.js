@@ -42,7 +42,7 @@ window.addEventListener("load", function (event) {
     display.drawMap(image, 8, game.world.map, 16);
 
     let player = game.world.player;
-    let frame = game.world.Character_set.frames[player.frame_value];
+    let frame = game.world.character_set.frames[player.frame_value];
 
     display.drawObject(
       assets_manager.character_image,
@@ -55,6 +55,22 @@ window.addEventListener("load", function (event) {
       player.width,
       player.height
     );
+
+
+    let link_obj = game.world.link_obj;
+    frame = game.world.tile_set.frames[link_obj.frame_value];
+    display.drawObject(
+      image,
+      frame.x,
+      frame.y,
+      frame.width + frame.offset_x,
+      frame.height + frame.offset_y,
+      link_obj.x,
+      link_obj.y,
+      link_obj.width,
+      link_obj.height
+    );
+
     display.render();
   };
 
