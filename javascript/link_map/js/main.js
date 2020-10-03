@@ -41,9 +41,25 @@ window.addEventListener("load", function (event) {
     display.drawBaseMap(image, 8, game.world.map, 11, 16);
     display.drawMap(image, 8, game.world.map, 16);
 
+
+    // draw link obj
+    let link_obj = game.world.link_obj;
+    let link_frame = game.world.tile_set.frames[link_obj.frame_value];
+    display.drawObject(
+      image,
+      link_frame.x,
+      link_frame.y,
+      link_frame.width + link_frame.offset_x,
+      link_frame.height + link_frame.offset_y,
+      link_obj.x,
+      link_obj.y,
+      link_obj.width,
+      link_obj.height
+    );
+
+    // draw player
     let player = game.world.player;
     let frame = game.world.character_set.frames[player.frame_value];
-
     display.drawObject(
       assets_manager.character_image,
       frame.x,
@@ -54,21 +70,6 @@ window.addEventListener("load", function (event) {
       player.y,
       player.width,
       player.height
-    );
-
-
-    let link_obj = game.world.link_obj;
-    frame = game.world.tile_set.frames[link_obj.frame_value];
-    display.drawObject(
-      image,
-      frame.x,
-      frame.y,
-      frame.width + frame.offset_x,
-      frame.height + frame.offset_y,
-      link_obj.x,
-      link_obj.y,
-      link_obj.width,
-      link_obj.height
     );
 
     display.render();
@@ -89,6 +90,10 @@ window.addEventListener("load", function (event) {
       game.world.player.moveDown();
     } else {
       game.world.player.yUp();
+    }
+
+    if (controller.space.active) {
+      game.world.link_obj.open();
     }
 
     game.update();

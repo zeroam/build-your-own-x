@@ -219,29 +219,44 @@ Object.assign(Game.Player.prototype, Game.Animator.prototype);
 Game.Player.prototype.constructor = Game.Player;
 
 // 충돌 시 링크가 세팅되는 오브젝트
-Game.LinkObject = function (x, y, url) {
-  Game.Object.call(this, x, y, 16, 16);
+Game.LinkObject = function (rows, cols, url, tile_size = 16) {
+  // row, col 기반으로 object 생성
+  Game.Object.call(this, cols * 16, rows * 16, 16, 16);
   Game.Animator.call(
     this,
     Game.LinkObject.prototype.frame_sets["idle-treasure"],
     10
   );
   // step 1. 일단 충돌 시 해당 링크가 콘솔창에 출력 되도록 설정
+  this.url = url;
+  this.is_near = false;
 
-  // 일단은 x, y 좌표 기반 -> 나중에는 타일으로 변경할 수 있음
 };
 Game.LinkObject.prototype = {
   frame_sets: {
-    "idle-treasure": [28],
-    "move-treasure": [27, 28],
+    "idle-treasure": [36],
+    "move-treasure": [35, 36],
+  },
+
+  open: function () {
+    // window.open(this.url, "_blank")
+    if (this.is_near === true) {
+      location.href = this.url;
+    }
   },
 
   update: function (player) {
     if (this.collideObject(player)) {
-      this.changeFrameSet(this.frame_sets["move-treasure"], "loop");
+      if (this.is_near === false) {
+        this.changeFrameSet(this.frame_sets["move-treasure"], "loop", 15);
+        this.is_near = true;
+      }
     } else {
       this.changeFrameSet(this.frame_sets["idle-treasure"], "pause");
+      this.is_near = false;
     }
+
+    this.animate();
   },
 };
 Object.assign(Game.LinkObject.prototype, Game.Object.prototype);
@@ -253,10 +268,10 @@ Game.World = function () {
 
   this.character_set = new Game.TileSet(8, 12, 16);
   this.tile_set = new Game.TileSet(11, 8, 16);
-  this.player = new Game.Player();
+  this.player = new Game.Player(100, 100);
 
   // 나중에는 동적으로 추가되는 오브젝트
-  this.link_obj = new Game.LinkObject(100, 200, "url");
+  this.link_obj = new Game.LinkObject(3, 2, "https://github.com");
 
   this.columns = 18;
   this.rows = 12;
