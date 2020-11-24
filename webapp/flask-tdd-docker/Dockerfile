@@ -13,12 +13,15 @@ ENV PYTHONBUFFERED 1
 # set working directory
 WORKDIR /usr/src/app
 
-# add and install requirements
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY ./requirements-dev.txt /usr/src/app/requirements-dev.txt
+RUN pip install -r requirements-dev.txt
 
+# add entrypoint.sh
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 # add app
-COPY . .
+COPY . /usr/src/app

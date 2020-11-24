@@ -1,8 +1,13 @@
+# python
+__pycache__
+.pytest_cache
 env
-.dockerignore
-Dockerfile
-Dockerfile.prod
 
 # coverage
 htmlcov
 .coverage
+
+# dockerfile
+.dockerignore
+Dockerfile
+Dockerfile.prod

@@ -1,10 +1,10 @@
 import pytest
 
 from project import create_app, db
-from project.api.models import User
+from project.api.users.models import User
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def test_app():
     app = create_app()
     app.config.from_object("project.config.TestingConfig")
