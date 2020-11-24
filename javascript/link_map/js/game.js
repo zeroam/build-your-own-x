@@ -55,6 +55,38 @@ Game.Animator.prototype = {
   },
 };
 
+Game.Collider = function () {
+  // 충돌인지 아닌지만 판별하면 됨
+  this.collide = function (value, object, tile_x, tile_y, tile_size) {
+    if (value === 1) {
+      // collideBottom
+      if (object.getTop() < tile_y) {
+        object.setTop(tile_y);
+        object.velocity_y = 0;
+      }
+
+      // collideLeft
+      if (object.getRight() > tile_x) {
+        object.setRight(tile_x);
+        object.velocity_x = 0;
+      }
+
+      // collideRight
+      if (object.getLeft() < tile_x) {
+        object.setLeft(tile_x);
+        object.velocity_x = 0;
+      }
+
+      // collideTop
+      if (object.getBottom() > tile_y) {
+        object.setBottom(tile_y);
+        object.velocity_y = 0;
+      }
+
+    }
+  }
+}
+
 Game.Frame = function (x, y, width, height, offset_x = 0, offset_y = 0) {
   this.x = x;
   this.y = y;
@@ -106,10 +138,28 @@ Game.Object.prototype = {
   getTop: function () {
     return this.y;
   },
+
+  setBottom: function (y) {
+    this.y = this.y - this.height;
+  },
+
+  setLeft: function (x) {
+    this.x = x;
+  },
+
+  setRight: function (x) {
+    this.x = x + this.width;
+  },
+
+  setTop: function (y) {
+    this.y = y;
+  }
 };
 
 Game.TileSet = function (rows, columns, tile_size) {
   let f = Game.Frame;
+
+  this.tile_size = tile_size;
 
   this.frames = [];
   for (let row = 0; row < rows; row++) {
@@ -230,7 +280,6 @@ Game.LinkObject = function (rows, cols, url, tile_size = 16) {
   // step 1. 일단 충돌 시 해당 링크가 콘솔창에 출력 되도록 설정
   this.url = url;
   this.is_near = false;
-
 };
 Game.LinkObject.prototype = {
   frame_sets: {
@@ -266,6 +315,8 @@ Game.LinkObject.prototype.constructor = Game.LinkObject;
 Game.World = function () {
   this.background_color = "#F0F8FF";
 
+  this.collider = new Game.Collider();
+
   this.character_set = new Game.TileSet(8, 12, 16);
   this.tile_set = new Game.TileSet(11, 8, 16);
   this.player = new Game.Player(100, 100);
@@ -275,8 +326,8 @@ Game.World = function () {
 
   this.columns = 18;
   this.rows = 12;
-  this.width = this.columns * 16
-  this.height = this.rows * 16
+  this.width = this.columns * 16;
+  this.height = this.rows * 16;
 
   // -1값은 기본 베이스 이미지 사용
   this.map = [
@@ -293,6 +344,21 @@ Game.World = function () {
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
   ];
+
+  this.collision_map = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]
 };
 Game.World.prototype = {
   collideObject: function (object) {
@@ -311,11 +377,63 @@ Game.World.prototype = {
       object.y = this.height - object.height;
       object.velocity_y = 0;
     }
+
+    // tile과 충돌 체크
+    var bottom, left, right, top, value;
+
+    // top, left corner check
+    top = Math.floor(object.getTop() / this.tile_set.tile_size);
+    left = Math.floor(object.getLeft() / this.tile_set.tile_size);
+    value = this.collision_map[top][left];
+    this.collider.collide(
+      value,
+      object,
+      left * this.tile_set.tile_size,
+      top * this.tile_set.tile_size,
+      this.tile_set.tile_size
+    );
+
+    // top, right corner check
+    top = Math.floor(object.getTop() / this.tile_set.tile_size);
+    right = Math.floor(object.getRight() / this.tile_set.tile_size);
+    value = this.collision_map[top][right];
+    this.collider.collide(
+      value,
+      object,
+      right * this.tile_set.tile_size,
+      top * this.tile_set.tile_size,
+      this.tile_set.tile_size
+    );
+
+    // bottom, left corner check
+    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
+    left = Math.floor(object.getLeft() / this.tile_set.tile_size);
+    value = this.collision_map[bottom][left];
+    this.collider.collide(
+      value,
+      object,
+      left * this.tile_set.tile_size,
+      bottom * this.tile_set.tile_size,
+      this.tile_set.tile_size
+    );
+
+    // bottom, right corner check
+    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
+    right = Math.floor(object.getRight() / this.tile_set.tile_size);
+    value = this.collision_map[bottom][right];
+    this.collider.collide(
+      value,
+      object,
+      right * this.tile_set.tile_size,
+      bottom * this.tile_set.tile_size,
+      this.tile_set.tile_size
+    );
   },
 
   update: function () {
     // 가속도 개념 필요 없음, 같은 속도로 계속 이동
     this.player.update();
+
     this.collideObject(this.player);
 
     // player 위치에 기반에 상태 변경
