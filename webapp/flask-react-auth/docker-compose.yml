@@ -1,28 +1,28 @@
-version: '3.7'
+version: '3.8'
 
 services:
 
-  users:
+  api:
     build:
-      context: .
-      dockerfile: dockerfile
+      context: ./services/users
+      dockerfile: Dockerfile
     entrypoint: ['/usr/src/app/entrypoint.sh']
     volumes:
-      - '.:/usr/src/app'
+      - './services/users:/usr/src/app'
     ports:
-      - 5001:5000
+      - 5004:5000
     environment:
       - FLASK_ENV=development
-      - APP_SETTINGS=project.config.DevelopmentConfig
-      - DATABASE_URL=postgresql://postgres:postgres@users-db:5432/users_dev
-      - DATABASE_TEST_URL=postgresql://postgres:postgres@users-db:5432/users_test
+      - APP_SETTINGS=src.config.DevelopmentConfig
+      - DATABASE_URL=postgresql://postgres:postgres@api-db:5432/api_dev
+      - DATABASE_TEST_URL=postgresql://postgres:postgres@api-db:5432/api_test
     depends_on:
-      - users-db
+      - api-db
 
-  users-db:
+  api-db:
     build:
-      context: ./project/db
-      dockerfile: dockerfile
+      context: ./services/users/src/db
+      dockerfile: Dockerfile
     expose:
       - 5432
     environment:
