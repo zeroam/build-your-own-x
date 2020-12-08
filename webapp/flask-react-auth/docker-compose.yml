@@ -1,7 +1,21 @@
 version: '3.8'
 
 services:
-
+  client:
+    stdin_open: true
+    build:
+      context: ./services/client
+      dockerfile: Dockerfile
+    volumes:
+      - './services/client:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - 3007:3000
+    environment: 
+      - NODE_ENV=development
+      - REACT_APP_API_SERVICE_URI=${REACT_APP_API_SERVICE_URI}
+    depends_on:
+      - api
   api:
     build:
       context: ./services/users
