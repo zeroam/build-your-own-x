@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const AddUser = (props) => {
   return (
@@ -16,7 +16,7 @@ const AddUser = (props) => {
           placeholder="Enter a username"
           required
           value={props.username}
-          onChange={props.handleChange}
+          onChange={props.onHandleChange}
         />
       </div>
       <div className="field">
@@ -31,7 +31,7 @@ const AddUser = (props) => {
           placeholder="Enter an email address"
           required
           value={props.email}
-          onChange={props.handleChange}
+          onChange={props.onHandleChange}
         />
       </div>
       <input
@@ -46,7 +46,7 @@ const AddUser = (props) => {
 AddUser.propTypes = {
   username: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired,
+  onHandleChange: PropTypes.func.isRequired,
   addUser: PropTypes.func.isRequired,
 };
 

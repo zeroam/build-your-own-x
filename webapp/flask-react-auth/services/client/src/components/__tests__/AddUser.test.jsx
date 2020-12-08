@@ -7,16 +7,18 @@ import AddUser from "../AddUser";
 afterEach(cleanup);
 
 const props = {
-  username: '',
-  email: '',
-  handleChange: () => { return true },
-  addUser: () => { return true },
-}
+  username: "",
+  email: "",
+  handleChange: () => {
+    return true;
+  },
+  addUser: () => {
+    return true;
+  },
+};
 
 it("renders with default props", () => {
-  const { getByLabelText, getByText } = render(
-    <AddUser {...props} />
-  );
+  const { getByLabelText, getByText } = render(<AddUser {...props} />);
 
   const usernameInput = getByLabelText("Username");
   expect(usernameInput).toHaveAttribute("type", "text");
@@ -33,8 +35,6 @@ it("renders with default props", () => {
 });
 
 it("renders", () => {
-  const { asFragment } = render(
-    <AddUser {...props} />
-  );
+  const { asFragment } = render(<AddUser {...props} />);
   expect(asFragment()).toMatchSnapshot();
 });

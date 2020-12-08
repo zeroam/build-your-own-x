@@ -25,7 +25,7 @@ class App extends Component {
 
   getUsers() {
     axios
-      .get(`${process.env.REACT_APP_API_SERVICE_URI}/users`)
+      .get(`${process.env.REACT_APP_API_SERVICE_URL}/users`)
       .then((res) => {
         this.setState({ users: res.data });
       })
@@ -43,10 +43,10 @@ class App extends Component {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_SERVICE_URI}/users`, data)
+      .post(`${process.env.REACT_APP_API_SERVICE_URL}/users`, data)
       .then((res) => {
         this.getUsers();
-        this.setState({ username: '', email: ''})
+        this.setState({ username: "", email: "" });
       })
       .catch((err) => {
         console.log(err);
@@ -72,7 +72,7 @@ class App extends Component {
                 username={this.state.username}
                 email={this.state.email}
                 addUser={this.addUser}
-                handleChange={this.handleChange}
+                onHandleChange={this.handleChange}
               />
               <hr /> <br />
               <UsersList users={this.state.users} />

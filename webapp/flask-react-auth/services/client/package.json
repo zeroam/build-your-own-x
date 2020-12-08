@@ -13,6 +13,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint src --ext .js,.jsx",
+    "prettier:check": "prettier --check 'src/**/*.{js,jsx,json}'",
+    "prettier:write": "prettier --write 'src/**/*.{js,jsx,json}'",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -37,6 +40,9 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.1.2",
-    "@testing-library/user-event": "^12.2.2"
+    "@testing-library/user-event": "^12.2.2",
+    "eslint": "^7.13.0",
+    "eslint-config-standard-jsx": "^10.0.0",
+    "prettier": "^2.1.1"
   }
 }

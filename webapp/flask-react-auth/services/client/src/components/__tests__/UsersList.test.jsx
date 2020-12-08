@@ -1,6 +1,6 @@
 import React from "react";
 import { render, cleanup } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect"
+import "@testing-library/jest-dom/extend-expect";
 
 import UsersList from "../UsersList";
 
@@ -25,7 +25,7 @@ it("renders a username", () => {
   expect(getByText("michaelherman")).toHaveClass("username");
 });
 
-it('renders', () => {
+it("renders", () => {
   const { asFragment } = render(<UsersList users={users} />);
   expect(asFragment()).toMatchSnapshot();
 });
