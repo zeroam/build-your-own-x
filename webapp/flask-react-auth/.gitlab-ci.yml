@@ -15,7 +15,7 @@ build:users:
     DOCKER_DRIVER: overlay2
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker pull $IMAGE:latest || true
+    - docker pull $IMAGE:users || true
     - docker build
       --cache-from $IMAGE:users
       --tag $IMAGE:users
@@ -40,7 +40,6 @@ build:client:
       --file ./services/client/Dockerfile.ci
       "./services/client"
     - docker push $IMAGE:client
-
 
 test:users:
   stage: test
@@ -69,4 +68,3 @@ test:client:
     - npm run prettier:check
     - npm run lint
     - npm run test
-    

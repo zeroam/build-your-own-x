@@ -2,6 +2,7 @@ import json
 
 from src import bcrypt
 from src.api.users.crud import get_user_by_id
+from src.api.users.models import User
 
 
 def test_passwords_are_random(test_app, test_database, add_user):
@@ -30,3 +31,16 @@ def test_update_user_with_password(test_app, test_database, add_user):
     user = get_user_by_id(user.id)
     assert bcrypt.check_password_hash(user.password, password_one)
     assert not bcrypt.check_password_hash(user.password, password_two)
+
+
+def test_encode_token(test_app, test_database, add_user):
+    user = add_user("justatest", "test@test.com", "test")
+    token = user.encode_token(user.id, "access")
+    assert isinstance(token, bytes)
+
+
+def test_decode_token(test_app, test_database, add_user):
+    user = add_user("justatest", "test@test.com", "test")
+    token = user.encode_token(user.id, "access")
+    assert isinstance(token, bytes)
+    assert User.decode_token(token) == user.id
