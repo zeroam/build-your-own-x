@@ -17,10 +17,10 @@ build:users:
     - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker pull $IMAGE:latest || true
     - docker build
-      -- cache-from $IMAGE:users
+      --cache-from $IMAGE:users
       --tag $IMAGE:users
       --file ./services/users/Dockerfile.prod
-      --build-args SECRET_KEY=$SECRET_KEY
+      --build-arg SECRET_KEY=$SECRET_KEY
       "./services/users"
     - docker push $IMAGE:users
 
@@ -56,10 +56,10 @@ test:users:
   script:
     - cd /usr/src/app
     - pip install -r requirements-dev.txt
-    - python -m pytest "project/tests" -p no:warnings
-    - python -m flake8 project
-    - python -m black project --check
-    - python -m isort project/**/*.py --check-only
+    - python -m pytest "src/tests" -p no:warnings
+    - python -m flake8 src
+    - python -m black src --check
+    - python -m isort src/**/*.py --check-only
 
 test:client:
   stage: test

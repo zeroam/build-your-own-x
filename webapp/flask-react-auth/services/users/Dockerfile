@@ -1,18 +1,17 @@
 # pull official base image
-FROM python:3.8.1-alpine
+FROM python:3.9.0-slim-buster
 
-# install dependencies
-RUN apk update && \
-    apk add --virtual build-deps gcc python-dev musl-dev && \
-    apk add postgresql-dev && \
-    apk add netcat-openbsd
+# set working directory
+WORKDIR /usr/src/app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# set working directory
-WORKDIR /usr/src/app
+# install system dependencies
+RUN apt-get update \
+  && apt-get -y install netcat gcc postgresql \
+  && apt-get clean
 
 # install dependencies
 RUN pip install --upgrade pip
