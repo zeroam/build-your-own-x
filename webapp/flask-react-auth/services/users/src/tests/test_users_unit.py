@@ -107,7 +107,7 @@ def test_single_user(test_app, monkeypatch):
     monkeypatch.setattr(src.api.users.views, "get_user_by_id", mock_get_user_by_id)
 
     client = test_app.test_client()
-    resp = client.get(f"/users/1")
+    resp = client.get("/users/1")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert "jeffrey" in data["username"]
@@ -227,15 +227,15 @@ def test_update_user(test_app, monkeypatch):
 
     client = test_app.test_client()
     resp_one = client.put(
-        f"/users/1",
+        "/users/1",
         data=json.dumps({"username": "me", "email": "me@testdriven.io"}),
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
     assert resp_one.status_code == 200
-    assert f"1 was updated" in data["message"]
+    assert "1 was updated" in data["message"]
 
-    resp_two = client.get(f"/users/1")
+    resp_two = client.get("/users/1")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "me" in data["username"]
