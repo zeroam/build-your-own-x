@@ -3,7 +3,7 @@ from flask import request
 from flask_restx import Namespace, Resource, fields
 
 from src import bcrypt
-from src.api.users.crud import get_user_by_email, get_user_by_id, add_user
+from src.api.users.crud import add_user, get_user_by_email, get_user_by_id
 from src.api.users.models import User
 
 auth_namespace = Namespace("auth")
@@ -14,7 +14,9 @@ user = auth_namespace.model(
 )
 
 full_user = auth_namespace.clone(
-    "Full User", user, {"password": fields.String(required=True)},
+    "Full User",
+    user,
+    {"password": fields.String(required=True)},
 )
 
 login = auth_namespace.model(
@@ -23,7 +25,8 @@ login = auth_namespace.model(
 )
 
 refresh = auth_namespace.model(
-    "Refresh", {"refresh_token": fields.String(required=True)},
+    "Refresh",
+    {"refresh_token": fields.String(required=True)},
 )
 
 tokens = auth_namespace.clone(
@@ -108,7 +111,6 @@ class Refresh(Resource):
             return response_object, 200
         except jwt.ExpiredSignatureError:
             auth_namespace.abort(401, "Signature expired. Please log in again.")
-            return "Signature expired. Please log in again."
         except jwt.InvalidTokenError:
             auth_namespace.abort(401, "Invalid token. Please log in again.")
 
@@ -130,7 +132,6 @@ class Status(Resource):
                 return user, 200
             except jwt.ExpiredSignatureError:
                 auth_namespace.abort(401, "Signature expired. Please log in again.")
-                return "Signature expired. Please log in again."
             except jwt.InvalidTokenError:
                 auth_namespace.abort(401, "Invalid token. Please log in again.")
         else:

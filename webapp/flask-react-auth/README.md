@@ -5,3 +5,9 @@
 
 ## README
 Authentication with Flask, React, and Docker
+
+## Commands
+- test code with coverage report
+```bash
+docker-compose exec api pytest src/tests -p no:warnings --cov=src --cov-report term-missing
+```

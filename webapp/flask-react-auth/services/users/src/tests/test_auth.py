@@ -2,6 +2,7 @@ import json
 
 import pytest
 from flask import current_app
+from src.api.users.models import User
 
 
 def test_user_registration(test_app, test_database):
@@ -49,7 +50,9 @@ def test_user_registration_duplicate_email(test_app, test_database, add_user):
 def test_user_registration_invalid_json(test_app, test_database, payload):
     client = test_app.test_client()
     resp = client.post(
-        f"/auth/register", data=json.dumps(payload), content_type="application/json",
+        "/auth/register",
+        data=json.dumps(payload),
+        content_type="application/json",
     )
     data = json.loads(resp.data.decode())
     assert resp.status_code == 400
@@ -111,7 +114,7 @@ def test_valid_refresh(test_app, test_database, add_user):
 
 def test_invalid_refresh_expired_token(test_app, test_database, add_user):
     add_user("test5", "test5@test.com", "test")
-    current_app.config["REFRESH_TOKEN_EXPIRATION"] = -1
+    test_app.config["REFRESH_TOKEN_EXPIRATION"] = -1
     client = test_app.test_client()
     # user login
     resp_login = client.post(
@@ -130,6 +133,22 @@ def test_invalid_refresh_expired_token(test_app, test_database, add_user):
     assert resp.status_code == 401
     assert resp.content_type == "application/json"
     assert "Signature expired. Please log in again." in data["message"]
+
+    test_app.config["REFRESH_TOKEN_EXPIRATION"] = 3
+
+
+def test_refresh_not_exist_user(test_app, test_database):
+    client = test_app.test_client()
+    refresh_token = User.encode_token(999, "refresh")
+    resp = client.post(
+        "/auth/refresh",
+        data=json.dumps({"refresh_token": refresh_token.decode()}),
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 401
+    assert resp.content_type == "application/json"
+    assert "Invalid token" in data["message"]
 
 
 def test_invalid_refresh(test_app, test_database):
@@ -178,3 +197,53 @@ def test_invalid_status(test_app, test_database):
     assert resp.status_code == 401
     assert resp.content_type == "application/json"
     assert "Invalid token. Please log in again." in data["message"]
+
+
+def test_user_status_not_exist(test_app, test_database):
+    client = test_app.test_client()
+    access_token = User.encode_token(999, "access").decode()
+    resp = client.get(
+        "/auth/status",
+        headers={"Authorization": f"Bearer {access_token}"},
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 401
+    assert resp.content_type == "application/json"
+    assert "Invalid token" in data["message"]
+
+
+def test_user_status_token_expired(test_app, test_database, add_user):
+    add_user("test7", "test7@test.com", "test")
+    test_app.config["ACCESS_TOKEN_EXPIRATION"] = -1
+    client = test_app.test_client()
+    # user login
+    resp_login = client.post(
+        "/auth/login",
+        data=json.dumps({"email": "test7@test.com", "password": "test"}),
+        content_type="application/json",
+    )
+    # expired token
+    access_token = json.loads(resp_login.data.decode())["access_token"]
+    resp = client.get(
+        "/auth/status",
+        headers={"Authorization": f"Bearer {access_token}"},
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 401
+    assert resp.content_type == "application/json"
+    assert "Signature expired. Please log in again." in data["message"]
+
+    test_app.config["ACCESS_TOKEN_EXPIRATION"] = 3
+
+
+def test_user_status_without_header(test_app, test_database):
+    client = test_app.test_client()
+    resp = client.get(
+        "/auth/status",
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 403
+    assert "Token required" in data["message"]

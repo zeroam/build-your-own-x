@@ -26,7 +26,8 @@ class User(db.Model):
             password, current_app.config.get("BCRYPT_LOG_ROUNDS")
         ).decode()
 
-    def encode_token(self, user_id, token_type):
+    @staticmethod
+    def encode_token(user_id, token_type):
         if token_type == "access":
             seconds = current_app.config.get("ACCESS_TOKEN_EXPIRATION")
         else:
