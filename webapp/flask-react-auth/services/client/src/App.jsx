@@ -15,27 +15,17 @@ class App extends Component {
 
     this.state = {
       users: [],
-      username: "",
-      email: "",
       title: "Jayone's Site",
     };
 
     this.addUser = this.addUser.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
     this.getUsers();
   }
 
-  addUser(event) {
-    event.preventDefault();
-
-    const data = {
-      username: this.state.username,
-      email: this.state.email,
-    };
-
+  addUser(data) {
     axios
       .post(`${process.env.REACT_APP_API_SERVICE_URL}/users`, data)
       .then((res) => {
@@ -58,12 +48,6 @@ class App extends Component {
       });
   }
 
-  handleChange(event) {
-    const obj = {};
-    obj[event.target.name] = event.target.value;
-    this.setState(obj);
-  }
-
   render() {
     return (
       <div>
@@ -81,13 +65,7 @@ class App extends Component {
                       <div>
                         <h1 className="title is-1 is-1">Users</h1>
                         <hr /> <br />
-                        <AddUser
-                          username={this.state.username}
-                          email={this.state.email}
-                          addUser={this.addUser}
-                          // eslint-disable-next-line react/jsx-handler-names
-                          handleChange={this.handleChange}
-                        />
+                        <AddUser addUser={this.addUser} />
                         <hr /> <br />
                         <UsersList users={this.state.users} />
                       </div>
