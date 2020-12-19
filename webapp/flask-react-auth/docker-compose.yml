@@ -11,9 +11,10 @@ services:
       - '/usr/src/app/node_modules'
     ports:
       - 3007:3000
-    environment: 
+    environment:
       - NODE_ENV=development
-      - REACT_APP_API_SERVICE_URL=${REACT_APP_API_SERVICE_URL}
+      # - REACT_APP_API_SERVICE_URL=${REACT_APP_API_SERVICE_URL}
+      - REACT_APP_API_SERVICE_URL=http://localhost:5004
     depends_on:
       - api
   api:
