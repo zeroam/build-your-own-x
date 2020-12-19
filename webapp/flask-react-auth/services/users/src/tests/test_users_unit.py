@@ -7,12 +7,18 @@ import src.api.users.views
 
 
 def test_add_user(test_app, monkeypatch):
+    def mock_get_user_by_username(username):
+        return None
+
     def mock_get_user_by_email(email):
         return None
 
     def mock_add_user(username, email, password):
         return True
 
+    monkeypatch.setattr(
+        src.api.users.views, "get_user_by_username", mock_get_user_by_username
+    )
     monkeypatch.setattr(
         src.api.users.views, "get_user_by_email", mock_get_user_by_email
     )
@@ -60,12 +66,18 @@ def test_add_user_invalid_json_keys(test_app, monkeypatch):
 
 
 def test_add_user_duplicate_email(test_app, monkeypatch):
+    def mock_get_user_by_username(username):
+        return None
+
     def mock_get_user_by_email(email):
         return True
 
     def mock_add_user(username, email, password):
         return True
 
+    monkeypatch.setattr(
+        src.api.users.views, "get_user_by_username", mock_get_user_by_username
+    )
     monkeypatch.setattr(
         src.api.users.views, "get_user_by_email", mock_get_user_by_email
     )

@@ -1,7 +1,6 @@
 import json
-import bcrypt
+
 import pytest
-from flask import current_app
 
 import src.api.users.auth
 from src.api.users.models import User
@@ -274,7 +273,7 @@ def test_user_status_token_expired(test_app, monkeypatch):
         return User(username="test", email="test@test.com", password="test")
 
     monkeypatch.setattr(src.api.users.auth, "get_user_by_email", mock_get_user_by_email)
-    
+
     test_app.config["ACCESS_TOKEN_EXPIRATION"] = -1
     client = test_app.test_client()
     # user login

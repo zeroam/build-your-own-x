@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from flask import current_app
+
 from src.api.users.models import User
 
 

@@ -47,6 +47,27 @@ def test_add_user_invalid_json_keys(test_app, test_database):
     assert "Input payload validation failed" in data["message"]
 
 
+def test_add_user_duplicate_name(test_app, test_database):
+    client = test_app.test_client()
+    client.post(
+        "/users",
+        data=json.dumps(
+            {"username": "jayone", "email": "jayone@test.com", "password": "secret"}
+        ),
+        content_type="application/json",
+    )
+    resp = client.post(
+        "/users",
+        data=json.dumps(
+            {"username": "jayone", "email": "jayone2@test.com", "password": "secret"}
+        ),
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 400
+    assert "Sorry. That username already exists." in data["message"]
+
+
 def test_add_user_duplicate_email(test_app, test_database):
     client = test_app.test_client()
     client.post(
@@ -64,7 +85,7 @@ def test_add_user_duplicate_email(test_app, test_database):
         "/users",
         data=json.dumps(
             {
-                "username": "michael",
+                "username": "michael2",
                 "email": "michael@testdriven.io",
                 "password": "greaterthaneight",
             }

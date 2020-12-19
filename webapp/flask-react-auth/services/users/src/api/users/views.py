@@ -4,6 +4,7 @@ from flask_restx import Namespace, Resource, fields
 from src.api.users.crud import (  # isort:skip
     get_all_users,
     get_user_by_email,
+    get_user_by_username,
     add_user,
     get_user_by_id,
     update_user,
@@ -44,6 +45,11 @@ class UsersList(Resource):
         email = post_data.get("email")
         password = post_data.get("password")
         response_object = {}
+
+        user = get_user_by_username(username)
+        if user:
+            response_object["message"] = "Sorry. That username already exists."
+            return response_object, 400
 
         user = get_user_by_email(email)
         if user:
