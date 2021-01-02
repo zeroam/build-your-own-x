@@ -20,7 +20,9 @@ it("renders properly", () => {
 });
 
 it("renders with default props", () => {
-  const { getByLabelText, getByText } = renderWithRouter(<RegisterForm {...props} />);
+  const { getByLabelText, getByText } = renderWithRouter(
+    <RegisterForm {...props} />
+  );
 
   const usernameInput = getByLabelText("Username");
   expect(usernameInput).toHaveAttribute("type", "text");
