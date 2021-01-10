@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
 
@@ -30,8 +30,8 @@ class UserStatus extends Component {
       .then((res) => {
         this.setState({
           email: res.data.email,
-          username: res.data.username
-        })
+          username: res.data.username,
+        });
         // console.log(res.data);
       })
       .catch((error) => {
@@ -46,8 +46,14 @@ class UserStatus extends Component {
     return (
       <div>
         <ul>
-          <li><strong>Email:</strong>&nbsp;<span data-testid="user-email">{this.state.email}</span></li>
-          <li><strong>Username:</strong>&nbsp;<span data-testid="user-username">{this.state.username}</span></li>
+          <li>
+            <strong>Email:</strong>&nbsp;
+            <span data-testid="user-email">{this.state.email}</span>
+          </li>
+          <li>
+            <strong>Username:</strong>&nbsp;
+            <span data-testid="user-username">{this.state.username}</span>
+          </li>
         </ul>
       </div>
     );
@@ -56,7 +62,7 @@ class UserStatus extends Component {
 
 UserStatus.propTypes = {
   accessToken: PropTypes.string,
-  isAuthenticated: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.func.isRequired,
 };
 
 export default UserStatus;

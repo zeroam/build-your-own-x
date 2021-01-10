@@ -9,8 +9,10 @@ afterEach(cleanup);
 jest.mock("axios");
 
 const props = {
-  isAuthenticated: () => { return true },
-}
+  isAuthenticated: () => {
+    return true;
+  },
+};
 
 it("renders properly when authenticated", async () => {
   axios.mockImplementationOnce(() =>
@@ -18,7 +20,9 @@ it("renders properly when authenticated", async () => {
       data: { email: "test@test.com", username: "test" },
     })
   );
-  const { container, findByTestId } = renderWithRouter(<UserStatus {...props} />);
+  const { container, findByTestId } = renderWithRouter(
+    <UserStatus {...props} />
+  );
   await waitFor(() => {
     expect(axios).toHaveBeenCalledTimes(1);
   });
@@ -26,10 +30,10 @@ it("renders properly when authenticated", async () => {
   expect((await findByTestId("user-username")).innerHTML).toBe("test");
 });
 
-it("renders", async() => {
+it("renders", async () => {
   axios.mockImplementation(() =>
     Promise.resolve({
-      data: { email: "test@test.com", id: 1, username: "test" }
+      data: { email: "test@test.com", id: 1, username: "test" },
     })
   );
 
